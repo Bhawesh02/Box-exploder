@@ -6,11 +6,15 @@ public class Target : MonoBehaviour
 {
 
     private Rigidbody targetRb;
+    private GameManager gameManager;
     private float maxSpeed = 15;
     private float minSpeed = 12;
     private float maxTorque = 10;
     private float xSpawn = 4;
     private float ySpawn = -2;
+
+    public int pointValue;
+    public ParticleSystem explosionParticle;
 
 
 
@@ -18,6 +22,7 @@ public class Target : MonoBehaviour
     void Start()
     {
         targetRb = GetComponent<Rigidbody>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         // Move up
         targetRb.AddForce(RandomForce(), ForceMode.Impulse);
         //Rotate target
@@ -31,12 +36,23 @@ public class Target : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Destroy(gameObject);
+        if(gameManager.isGameActive)
+        {
+
+            Destroy(gameObject);
+            gameManager.UpdateScore(pointValue);
+            Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if(!gameObject.CompareTag("Bad"))
+        {
+            gameManager.GameOver();
+        }
     }
 
 
